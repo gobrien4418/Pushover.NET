@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PushoverClient</RootNamespace>
     <AssemblyName>PushoverClient</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
@@ -49,11 +49,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EmergencyMessage.cs" />
+    <Compile Include="LicenseResponse.cs" />
+    <Compile Include="PushResponse.cs" />
     <Compile Include="Sundry.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="Pushover.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PushResponse.cs" />
+    <Compile Include="PushoverResponse.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

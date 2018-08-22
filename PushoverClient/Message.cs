@@ -92,6 +92,7 @@ namespace PushoverClient
                 {
                     throw new ArgumentException("Url is limited to 512 characters", nameof(Url));
                 }
+            }
         }
     }
 }
