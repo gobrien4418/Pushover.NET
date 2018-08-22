@@ -100,9 +100,9 @@ namespace PushoverClient
             }
         }
 
-        public LicenseResponse AssignLicense(string user)
+        public LicenseResponse AssignLicense(string userKey)
         {
-            var args = new { token = _appKey, user };
+            var args = new { token = _appKey, user = userKey};
             try
             {
                 return BASE_LICENSE_API_URL.PostToUrl(args).FromJson<LicenseResponse>();
