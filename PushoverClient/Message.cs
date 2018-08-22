@@ -36,7 +36,7 @@ namespace PushoverClient
                 url = Url,
                 url_title = UrlTitle,
                 priority = Priority,
-                sound
+                sound = Notification
             };
 
         }

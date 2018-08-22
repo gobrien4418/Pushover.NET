@@ -15,11 +15,13 @@ namespace PushoverClient.Tests
         {
             //  Arrange
             string title = "Test title";
-            string message = "This is a test push notification message";
+            string text = "This is a test push notification message";
 
             //  Act
             Pushover pclient = new Pushover(TEST_APP_KEY);
-            PushResponse response = pclient.Push(title, message, TEST_USER_KEY);
+            var message = new PushoverMessage() { Title = title, Text = text };
+            message.Recipients.Add(TEST_USER_KEY);
+            PushoverResponse response = pclient.SendPush(message);
 
             //  Assert
             Assert.IsNotNull(response);
@@ -31,11 +33,13 @@ namespace PushoverClient.Tests
         {
             //  Arrange
             string title = "Test title";
-            string message = "This is a test push notification message";
+            string text = "This is a test push notification message";
 
             //  Act
             Pushover pclient = new Pushover(TEST_APP_KEY);
-            PushResponse response = await pclient.PushAsync(title, message, TEST_USER_KEY);
+            var message = new PushoverMessage() { Title = title, Text = text };
+            message.Recipients.Add(TEST_USER_KEY);
+            PushoverResponse response = await pclient.SendPushAsync(message);
 
             //  Assert
             Assert.IsNotNull(response);
@@ -48,11 +52,13 @@ namespace PushoverClient.Tests
         {
             //  Arrange
             string title = "Test title";
-            string message = "This is a test push notification message";
+            string text = "This is a test push notification message";
 
             //  Act
             Pushover pclient = new Pushover(TEST_APP_KEY);
-            PushResponse response = await pclient.PushAsync(title, message);
+            var message = new PushoverMessage() { Title = title, Text = text };
+
+            PushoverResponse response = await pclient.SendPushAsync(message);
 
             //  Assert - above code should error before this
             Assert.Fail();
@@ -63,11 +69,12 @@ namespace PushoverClient.Tests
         {
             //  Arrange
             string title = "Test title";
-            string message = "This is a test push notification message";
+            string text = "This is a test push notification message";
 
             //  Act
-            Pushover pclient = new Pushover(TEST_APP_KEY) { DefaultUserGroupSendKey = TEST_USER_KEY };
-            PushResponse response = await pclient.PushAsync(title, message);
+            Pushover pclient = new Pushover(TEST_APP_KEY, TEST_USER_KEY);
+            var message = new PushoverMessage() { Title = title, Text = text };
+            PushoverResponse response = await pclient.SendPushAsync(message);
 
             //  Assert
             Assert.IsNotNull(response);
