@@ -11,8 +11,8 @@ namespace PushoverClient
         public bool Html { get; set; }
         public string Url { get; set; } = "";
         public string UrlTitle { get; set; } = "";
-        public virtual Priority Priority { get; set; }
-        public NotificationSound Notification { get; set; }
+        public virtual Priority Priority { get; set; } = Priority.Normal;
+        public NotificationSound Notification { get; set; } = NotificationSound.Pushover;
         public string AppKey { get; set; }
 
         public PushoverMessage() { }
@@ -24,7 +24,7 @@ namespace PushoverClient
 
         public virtual object ToArgs()
         {
-            ValidateArgs(out string priority, out string sound);
+            ValidateArgs();
 
             return new
             {
@@ -41,7 +41,7 @@ namespace PushoverClient
 
         }
 
-        protected void ValidateArgs(out string priority, out string sound)
+        protected void ValidateArgs()
         {
             if (Recipients == null || Recipients.Count < 1)
             {
@@ -92,10 +92,6 @@ namespace PushoverClient
                 {
                     throw new ArgumentException("Url is limited to 512 characters", nameof(Url));
                 }
-            }
-
-            priority = Priority?.ToString() ?? Priority.Normal.ToString();
-            sound = Notification?.ToString() ?? NotificationSound.Pushover.ToString();
         }
     }
 }

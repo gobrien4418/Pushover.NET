@@ -28,7 +28,7 @@ namespace PushoverClient
 
         public override object ToArgs()
         {
-            ValidateArgs(out string priority, out string sound);
+            ValidateArgs();
 
             return new
             {
