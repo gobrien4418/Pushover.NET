@@ -14,25 +14,18 @@ namespace PushoverClient
         /// <summary>
         /// Base url for the API
         /// </summary>
+        // ReSharper disable once InconsistentNaming
         private const string BASE_API_URL = "https://api.pushover.net/1/messages.json";
 
         /// <summary>
         /// The application key
         /// </summary>
-        public string AppKey
-        {
-            get;
-            set;
-        }
+        private string AppKey { get; set; }
 
         /// <summary>
         /// The default user or group key to send messages to
         /// </summary>
-        public string DefaultUserGroupSendKey
-        {
-            get;
-            set;
-        }
+        private string DefaultUserGroupSendKey { get; set; }
 
         /// <summary>
         /// Create a pushover client using a source application key.
@@ -40,34 +33,33 @@ namespace PushoverClient
         /// <param name="appKey"></param>
         public Pushover(string appKey)
         {
-            this.AppKey = appKey;
+            AppKey = appKey;
         }
 
-        /// <summary>
-        /// Create a pushover client using both a source 
-        /// application key and a default send key
-        /// </summary>
-        /// <param name="appKey"></param>
-        /// <param name="defaultSendKey"></param>
-        public Pushover(string appKey, string defaultSendKey) : this(appKey)
+        public PushResponse SendPush(PushoverMessage message)
         {
-            this.DefaultUserGroupSendKey = defaultSendKey;   
-        }
-
-        /// <summary>
-        /// Push a message
-        /// </summary>
-        /// <param name="title">Message title</param>
-        /// <param name="message">The body of the message</param>
-        /// <param name="userKey">The user or group key (optional if you have set a default already)</param>
-        /// <param name="device">Send to a specific device</param>
-        /// <returns></returns>
-        public PushResponse Push(string title, string message, string userKey = "", string device = "")
-        {
-            var args = CreateArgs(title, message, userKey, device);
+            //TODO: Create args from message
             try
             {
-                return BASE_API_URL.PostToUrl(args).FromJson<PushResponse>();
+                var limit = 0;
+                var remaining = 0;
+                var reset = "";
+                message.AppKey = AppKey;
+                
+                var response = BASE_API_URL.PostToUrl(message.ToArgs(), responseFilter: httpRes =>
+                    {
+                        int.TryParse(httpRes.Headers["X-Limit-App-Limit"], out limit);
+                        int.TryParse(httpRes.Headers["X-Limit-App-Remaining"], out remaining);
+                        reset = httpRes.Headers["X-Limit-App-Reset"] ?? "";
+                    })
+                    .FromJson<PushResponse>();
+                response.Limits = new Limitations
+                {
+                    Limit = limit,
+                    Remaining = remaining,
+                    Reset = reset,
+                };
+                return response;
             }
             catch (WebException webEx)
             {
@@ -75,43 +67,36 @@ namespace PushoverClient
             }
         }
 
-        /// <summary>
-        /// Push a message
-        /// </summary>
-        /// <param name="title">Message title</param>
-        /// <param name="message">The body of the message</param>
-        /// <param name="userKey">The user or group key (optional if you have set a default already)</param>
-        /// <param name="device">Send to a specific device</param>
-        /// <returns></returns>
-        public async Task<PushResponse> PushAsync(string title, string message, string userKey = "", string device = "")
+        public async Task<PushResponse> SendPushAsync(PushoverMessage message)
         {
-            var args = CreateArgs(title, message, userKey, device);
+            //TODO: Create args from message
             try
             {
-                return (await BASE_API_URL.PostToUrlAsync(args)).FromJson<PushResponse>();
+                var limit = 0;
+                var remaining = 0;
+                var reset = "";
+                message.AppKey = AppKey;
+
+                var asyncResponse = await BASE_API_URL.PostToUrlAsync(message.ToArgs(), responseFilter: httpRes =>
+                {
+                    int.TryParse(httpRes.Headers["X-Limit-App-Limit"], out limit);
+                    int.TryParse(httpRes.Headers["X-Limit-App-Remaining"], out remaining);
+                    reset = httpRes.Headers["X-Limit-App-Reset"] ?? "";
+                });
+
+                var response = asyncResponse.FromJson<PushResponse>();
+                response.Limits = new Limitations
+                {
+                    Limit = limit,
+                    Remaining = remaining,
+                    Reset = reset,
+                };
+                return response;
             }
             catch (WebException webEx)
             {
                 return webEx.GetResponseBody().FromJson<PushResponse>();
             }
-        }
-
-        private object CreateArgs(string title, string message, string userKey, string device)
-        {
-            // Try the passed user key or fall back to default
-            string userGroupKey = string.IsNullOrEmpty(userKey) ? this.DefaultUserGroupSendKey : userKey;
-
-            if (string.IsNullOrEmpty(userGroupKey))
-                throw new ArgumentException("User key must be supplied", nameof(userKey));
-
-            return new
-            {
-                token = this.AppKey,
-                user = userGroupKey,
-                device,
-                title,
-                message
-            };
         }
     }
 }
