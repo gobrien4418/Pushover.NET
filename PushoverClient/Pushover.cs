@@ -17,6 +17,8 @@ namespace PushoverClient
         // ReSharper disable once InconsistentNaming
         private const string BASE_MESSAGE_API_URL = "https://api.pushover.net/1/messages.json";
         private const string BASE_LICENSE_API_URL = "https://api.pushover.net/1/licenses/assign.json";
+        private const string BASE_GROUP_ADD_API_URL = "https://api.pushover.net/1/groups/{0}/add_user.json";
+        private const string BASE_GROUP_REMOVE_API_URL = "https://api.pushover.net/1/groups/{0}/delete_user.json";
         /// <summary>
         /// The application key
         /// </summary>
@@ -106,6 +108,32 @@ namespace PushoverClient
             try
             {
                 return BASE_LICENSE_API_URL.PostToUrl(args).FromJson<LicenseResponse>();
+            }
+            catch (WebException webEx)
+            {
+                return webEx.GetResponseBody().FromJson<LicenseResponse>();
+            }
+        }
+
+        public PushoverResponse AddToGroup(string userKey, string groupKey, string memo)
+        {
+            var args = new { token = _appKey, user = userKey, memo };
+            try
+            {
+                return string.Format(BASE_GROUP_ADD_API_URL, groupKey).PostToUrl(args).FromJson<LicenseResponse>();
+            }
+            catch (WebException webEx)
+            {
+                return webEx.GetResponseBody().FromJson<LicenseResponse>();
+            }
+        }
+
+        public PushoverResponse RemoveFromGroup(string userKey, string groupKey, string memo)
+        {
+            var args = new { token = _appKey, user = userKey, memo };
+            try
+            {
+                return string.Format(BASE_GROUP_REMOVE_API_URL, groupKey).PostToUrl(args).FromJson<LicenseResponse>();
             }
             catch (WebException webEx)
             {
