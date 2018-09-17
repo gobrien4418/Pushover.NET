@@ -39,8 +39,8 @@ namespace PushoverClient
                 html = Html ? "1" : "0",
                 url = Url,
                 url_title = UrlTitle,
-                priority = Priority.Emergency,
-                sound = Notification,
+                priority = Priority.Emergency.ToString(),
+                sound = NotificationSound.Persistent.ToString(),
                 retry = RetrySeconds,
                 expire = ExpireSeconds
             };

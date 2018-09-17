@@ -23,7 +23,7 @@ namespace PushoverClient
 
         public override string ToString()
         {
-            return string.Format("Status: {0} | Request: {1} | Errors: {2} | ", Status, Request, string.Join(",", Errors));
+            return string.Format("Status: {0} | Request: {1} | Errors: {2} | ", Status, Request, Errors != null ? string.Join(",", Errors): string.Empty);
         }
     }
 }

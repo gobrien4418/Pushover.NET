@@ -50,7 +50,8 @@ namespace PushoverClient
                 if (message.Recipients.Count < 1 && _defaultUserGroupSendKey != null)
                     message.Recipients.Add(_defaultUserGroupSendKey);
 
-                var response = BASE_MESSAGE_API_URL.PostToUrl(message.ToArgs(), responseFilter: httpRes =>
+                var messageArgs = message.ToArgs();
+                var response = BASE_MESSAGE_API_URL.PostToUrl(messageArgs, responseFilter: httpRes =>
                     {
                         int.TryParse(httpRes.Headers["X-Limit-App-Limit"], out limit);
                         int.TryParse(httpRes.Headers["X-Limit-App-Remaining"], out remaining);
